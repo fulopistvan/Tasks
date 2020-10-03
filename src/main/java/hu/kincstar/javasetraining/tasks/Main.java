@@ -31,7 +31,10 @@ public class Main {
         tasks.setConnetions(1, 7, ConnectionType.CHILD);
         tasks.setConnetions(4, 6, ConnectionType.CHILD);
         tasks.setConnetions(4, 8, ConnectionType.PARENT);
+        tasks.setConnetions(4, 3, ConnectionType.PARENT);
         tasks.setConnetions(3, 4, ConnectionType.PREDECESSOR);
+        tasks.setConnetions(4, 3, ConnectionType.CHILD);
+        tasks.setConnetions(8, 4, ConnectionType.PREDECESSOR);
 
         System.out.println(tasks.toString());
 

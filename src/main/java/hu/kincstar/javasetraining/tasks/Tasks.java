@@ -227,26 +227,60 @@ public class Tasks {
                 for (int j = 0; j < this.taskList.size(); j++) {
                     Task task2 = this.taskList.get(j);
                     if (task2.getTaskId() == id1) {
-                        TasksConnection taskConnection = new TasksConnection(id2, connType);
-                        task2.getTaskConnectionType().add(taskConnection);
-                        System.out.println("\033[32mKapcsolat beállítása: Sikeres kapcsolás.\033[0m" + '\n');
-                        cnt = cnt + 1;
+                        List<TasksConnection> connections = task2.getTaskConnectionType();
+                        for (int l = 0; l < connections.size(); l++) {
+                            if (connections.get(l).getTaskId() == id2) {
+                                throw new IllegalArgumentException("A kapcsolás nem hozható létre, mert ez a kapcsolat már létezik." + '\n');
+                            }
+                        }
+                    }
+                }
+                if (connType.equals(ConnectionType.PREDECESSOR)) {
+                    for (int m = 0; m < this.taskList.size(); m++) {
+                        Task task4 = this.taskList.get(m);
+                        if (task4.getTaskId() == id2) {
+                            List<TasksConnection> connections2 = task4.getTaskConnectionType();
+                            for (int n = 0; n < connections2.size(); n++) {
+                                if (connections2.get(n).getTaskId() == id1) {
+                                    throw new IllegalArgumentException("A kaocsolás nem hozható létre, mert már van valamilyen fodított irányú kapcsolat köztük." + '\n');
+                                }
+                            }
+                        }
                     }
                 }
                 if (connType.equals(ConnectionType.CHILD) || connType.equals(ConnectionType.PARENT)) {
                     for (int k = 0; k < this.taskList.size(); k++) {
                         Task task3 = this.taskList.get(k);
                         if (task3.getTaskId() == id2) {
+                            List<TasksConnection> connections3 = task3.getTaskConnectionType();
+                            for (int o = 0; o < connections3.size(); o++) {
+                                if (connections3.get(o).getTaskId() == id1) {
+                                    throw new IllegalArgumentException("A kapcsolás nem hozható létre, mert már van valamilyen fodított irányú kapcsolat köztük." + '\n');
+                                }
+                            }
                             if (connType.equals(ConnectionType.CHILD)) {
                                 TasksConnection taskConnection2 = new TasksConnection(id1, ConnectionType.PARENT);
                                 task3.getTaskConnectionType().add(taskConnection2);
                             } else {
+                                for (int q = 0; q < connections3.size(); q++) {
+                                    if (connections3.get(q).getTaskConnectionType().equals(ConnectionType.PARENT)) {
+                                        throw new IllegalArgumentException("A kapcsolás nem hozható létre, mert már van másik feladattal ilyen kapcsolat." + '\n');
+                                    }
+                                }
                                 TasksConnection taskConnection2 = new TasksConnection(id1, ConnectionType.CHILD);
                                 task3.getTaskConnectionType().add(taskConnection2);
                             }
                             System.out.println("\033[32mKapcsolat beállítása: Sikeres kapcsolás.\033[0m" + '\n');
-                            cnt = cnt + 1;
                         }
+                    }
+                }
+                for (int p = 0; p < this.taskList.size(); p++) {
+                    Task task5 = this.taskList.get(p);
+                    if (task5.getTaskId() == id1) {
+                        TasksConnection taskConnection3 = new TasksConnection(id2, connType);
+                        task5.getTaskConnectionType().add(taskConnection3);
+                        System.out.println("\033[32mKapcsolat beállítása: Sikeres kapcsolás.\033[0m" + '\n');
+                        cnt = cnt + 1;
                     }
                 }
             }
