@@ -1,7 +1,7 @@
 package hu.kincstar.javasetraining.tasks;
 
 public enum ConnectionType {
-    CHILD("Gyermek"), PARENT("Szülő"), PREDECESSOR("Előd");
+    CHILD("Gyermek"), PARENT("Szülő"), PRECEDESSOR("Előd");
 
     private final String text;
 

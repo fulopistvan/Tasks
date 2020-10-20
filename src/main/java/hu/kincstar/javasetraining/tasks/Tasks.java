@@ -70,7 +70,8 @@ public class Tasks {
             }
             return retVal;
         } catch (Exception e) {
-            return "\033[31mMegadott státuszú feladatok lekérdezése: " + e.getMessage() + "\033[0m";
+            throw new GetOneStatusException("\033[31mMegadott státuszú feladatok lekérdezése: " + e.getMessage() + "\033[0m");
+//            return "\033[31mMegadott státuszú feladatok lekérdezése: " + GetOneOwnerException.getMessage() + "\033[0m";
         }
     }
 
@@ -104,7 +105,7 @@ public class Tasks {
             }
             return retVal;
         } catch (Exception e) {
-            return "\033[31mEgy felhasználóhoz tartozó feladatok lekérdezése: " + e.getMessage() + "\033[0m";
+            throw new GetOneOwnerException("\033[31mEgy felhasználóhoz tartozó feladatok lekérdezése: " + e.getMessage() + "\033[0m");
         }
     }
 
@@ -126,6 +127,9 @@ public class Tasks {
                     if (state.equals(Status.DONE) && !task.getTaskStatus().equals(Status.IN_PROGRESS)) {
                         throw new IllegalStateException("A státusz \'Kész\'-re csak \'Folyamatban lévő\' státuszból állítható!" + '\n');
                     }
+                    if (state.equals(Status.IN_PROGRESS) && (!task.getTaskStatus().equals(Status.NEW) && !task.getTaskStatus().equals(Status.BLOCKED))) {
+                        throw new IllegalStateException("A státusz \'Kész\'-re csak \'Folyamatban lévő\' státuszból állítható!" + '\n');
+                    }
                     if (state.equals(Status.DONE)) {
                         List<TasksConnection> connections = task.getTaskConnectionType();
                         for (int j = 0; j < connections.size(); j++) {
@@ -145,7 +149,7 @@ public class Tasks {
                     if (state.equals(Status.IN_PROGRESS)) {
                         List<TasksConnection> connections = task.getTaskConnectionType();
                         for (int l = 0; l < connections.size(); l++) {
-                            if (connections.get(l).getTaskConnectionType().equals(ConnectionType.PREDECESSOR)) {
+                            if (connections.get(l).getTaskConnectionType().equals(ConnectionType.PRECEDESSOR)) {
                                 int id2 = connections.get(l).getTaskId();
                                 for (int m = 0; m < this.taskList.size(); m++) {
                                     Task task2 = this.taskList.get(m);
@@ -168,8 +172,7 @@ public class Tasks {
             }
             return true;
         } catch (Exception e) {
-            System.out.println("\033[31mStátuszállítás: " + e.getMessage() + "\033[0m");
-            return false;
+            throw new SetStatusException("\033[31mStátuszállítás: " + e.getMessage() + "\033[0m");
         }
     }
 
@@ -204,8 +207,7 @@ public class Tasks {
             }
             return true;
         } catch (Exception e) {
-            System.out.println("\033[31mFeladat törlése: " + e.getMessage() + "\033[0m");
-            return false;
+            throw new DeleteTaskException("\033[31mFeladat törlése: " + e.getMessage() + "\033[0m");
         }
     }
 
@@ -235,14 +237,14 @@ public class Tasks {
                         }
                     }
                 }
-                if (connType.equals(ConnectionType.PREDECESSOR)) {
+                if (connType.equals(ConnectionType.PRECEDESSOR)) {
                     for (int m = 0; m < this.taskList.size(); m++) {
                         Task task4 = this.taskList.get(m);
                         if (task4.getTaskId() == id2) {
                             List<TasksConnection> connections2 = task4.getTaskConnectionType();
                             for (int n = 0; n < connections2.size(); n++) {
                                 if (connections2.get(n).getTaskId() == id1) {
-                                    throw new IllegalArgumentException("A kaocsolás nem hozható létre, mert már van valamilyen fodított irányú kapcsolat köztük." + '\n');
+                                    throw new IllegalArgumentException("A kapcsolás nem hozható létre, mert már van valamilyen fodított irányú kapcsolat köztük." + '\n');
                                 }
                             }
                         }
@@ -251,7 +253,7 @@ public class Tasks {
                 if (connType.equals(ConnectionType.CHILD) || connType.equals(ConnectionType.PARENT)) {
                     for (int k = 0; k < this.taskList.size(); k++) {
                         Task task3 = this.taskList.get(k);
-                        if (task3.getTaskId() == id2) {
+                        if (task3.getTaskId() == id1) {
                             List<TasksConnection> connections3 = task3.getTaskConnectionType();
                             for (int o = 0; o < connections3.size(); o++) {
                                 if (connections3.get(o).getTaskId() == id1) {
@@ -289,8 +291,7 @@ public class Tasks {
             }
             return true;
         } catch (Exception e) {
-            System.out.println("\033[31mKapcsolat beállítása: " + e.getMessage() + "\033[0m");
-            return false;
+            throw new SetConnectionException("\033[31mKapcsolat beállítása: " + e.getMessage() + "\033[0m");
         }
     }
 }
